@@ -26,9 +26,9 @@
     "mount-sys-linux": "sudo mount -o uid=$(id -u),gid=$(id -g) images/sys.img ./sys-fs",
     "umount-sys-linux": "sudo umount ./sys-fs",
     "bundle": "gulp",
-    "flash-erase": "esptool.py --chip esp32 -b 921600 erase_flash",
-    "flash-micropython": "esptool.py --chip esp32 -b 921600 write_flash -z 0x1000 images/mp.bin",
-    "flash-sys": "esptool.py --chip esp32 -b 921600 write_flash -z 0x200000 images/sys.img"
+    "flash-erase": "esptool.py --chip esp32 -b 406800 erase_flash",
+    "flash-micropython": "esptool.py --chip esp32 -b 406800 write_flash -z 0x1000 images/mp.bin",
+    "flash-sys": "esptool.py --chip esp32 -b 406800 write_flash -z 0x200000 images/sys.img"
   },
   "dependencies": {}
 }

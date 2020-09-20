@@ -1,4 +1,5 @@
 import sys
+import uos
 import gc
 import webrepl
 from lib import screen
@@ -35,6 +36,12 @@ screen.print_line('WebREPL started', 4)
 panel.start_panel()
 
 gc.collect()
+
+try:
+    temp = uos.stat('/otto')
+    sys.path.append('/otto')
+except:
+    pass
 
 sys.path.append('/user')
 

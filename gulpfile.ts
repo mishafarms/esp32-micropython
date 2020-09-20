@@ -14,6 +14,8 @@ const PanelPath = path.join(__dirname, 'panel', 'dist');
 
 const EduBlocksPath = path.join(__dirname, '..', 'edublocks-micropython', 'web');
 
+const OttoPythonPath = path.join(__dirname, '..', 'OttoDIYPython');
+
 const dest = path.join(__dirname, 'sys-fs');
 
 const ExtNoGzip = ['.py', '.xml', '.mp3', '.wav', '.json', '.bmp']
@@ -66,4 +68,13 @@ gulp.task('bundle-edublocks', () => {
   ]);
 });
 
-gulp.task('default', gulp.series(['clean', 'bundle-core', 'bundle-panel', 'bundle-edublocks']));
+gulp.task('bundle-otto', () => {
+  return pump([
+    gulp.src([`${OttoPythonPath}/*.py`], { base: OttoPythonPath }),
+    debug({ title: 'bundle-ottopython' }),
+    ...compressionStages(),
+    gulp.dest(path.join(dest, 'otto')),
+  ]);
+});
+
+gulp.task('default', gulp.series(['clean', 'bundle-core', 'bundle-panel', 'bundle-edublocks', 'bundle-otto']));

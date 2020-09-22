@@ -73,7 +73,7 @@ gulp.task('bundle-otto', () => {
     gulp.src([`${OttoPythonPath}/*.py`], { base: OttoPythonPath }),
     debug({ title: 'bundle-ottopython' }),
     ...compressionStages(),
-    gulp.dest(path.join(dest, 'otto')),
+    gulp.dest(path.join(dest, 'lib')),
   ]);
 });
 

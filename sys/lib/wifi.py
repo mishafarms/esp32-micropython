@@ -1,7 +1,7 @@
 import network
 import json
 import wifi_config
-import screen
+#mport screen
 from time import sleep
 
 ap_if = network.WLAN(network.AP_IF)
@@ -44,7 +44,7 @@ def connect(ssid, password) -> str:
 
     sta_if.disconnect()
 
-    screen.print_line('C\'ing %s...' % ssid, 0)
+#    screen.print_line('C\'ing %s...' % ssid, 0)
 
     sta_if.connect(ssid, password)
 
@@ -56,19 +56,19 @@ def connect(ssid, password) -> str:
 
         sleep(1)
 
-        screen.print_line('Attempt %i' % attempt, 1)
+#        screen.print_line('Attempt %i' % attempt, 1)
 
     if connected:
         ip_address = sta_if.ifconfig()[0]
 
-        screen.print_line('Conn! %s' % ssid, 0)
-        screen.print_line('IP %s' % ip_address, 1)
+#        screen.print_line('Conn! %s' % ssid, 0)
+#        screen.print_line('IP %s' % ip_address, 1)
 
         ap_if.active(False)
 
         return ip_address
-    else:
-        screen.print_line('Failed!', 0)
+#    else:
+#        screen.print_line('Failed!', 0)
 
         return None
 
@@ -139,5 +139,5 @@ def auto_connect():
 
             return
 
-    screen.print_line(ap_if.config('essid'), 0)
-    screen.print_line('192.168.4.1', 1)
+#    screen.print_line(ap_if.config('essid'), 0)
+#    screen.print_line('192.168.4.1', 1)

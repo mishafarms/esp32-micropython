@@ -4,9 +4,11 @@ import gc
 import webrepl
 from lib import wifi
 from lib import panel
+import time
 
 gc.collect()
 
+time.sleep_ms(150)
 wifi.auto_connect()
 
 gc.collect()

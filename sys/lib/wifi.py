@@ -3,12 +3,24 @@ import json
 import wifi_config
 #mport screen
 from time import sleep
+from time import sleep_ms
+import _thread
 
-ap_if = network.WLAN(network.AP_IF)
-sta_if = network.WLAN(network.STA_IF)
+ap_if = 0
+sta_if = 0
 
-ap_if.active(True)
-sta_if.active(True)
+def startup():
+    sleep_ms(50)
+    
+    global ap_if
+    global sta_if
+    ap_if = network.WLAN(network.AP_IF)
+    sta_if = network.WLAN(network.STA_IF)
+
+    ap_if.active(True)
+    sta_if.active(True)
+
+_thread.start_new_thread(startup, ())
 
 
 def get_status():
@@ -64,7 +76,9 @@ def connect(ssid, password) -> str:
 #        screen.print_line('Conn! %s' % ssid, 0)
 #        screen.print_line('IP %s' % ip_address, 1)
 
-        ap_if.active(False)
+
+# I don't like the stopping of the AP. There should be a button on the web page to do this
+#        ap_if.active(False)
 
         return ip_address
 #    else:

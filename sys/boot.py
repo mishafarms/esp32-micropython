@@ -2,6 +2,7 @@ import sys
 import uos
 import gc
 import webrepl
+from lib import mountPart
 from lib import wifi
 from lib import panel
 import time

@@ -2,14 +2,14 @@ import json
 import os
 
 def save(key, value):
-    filename = '/user/' + key + '.json'
+    filename = '/eeprom/' + key + '.json'
     f = open(filename, 'w')
     json_str = json.dumps(value)
     f.write(json_str)
     f.close()
 
 def load(key, default = None):
-    filename = '/user/' + key + '.json'
+    filename = '/eeprom/' + key + '.json'
 
     try:
         f = open(filename)

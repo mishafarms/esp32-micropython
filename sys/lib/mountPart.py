@@ -12,7 +12,7 @@ def mntPart(partName, mountName):
     
     # Try to mount the eeprom partition
 
-    p = Partition.findPartition.TYPE_DATA, label=partName)
+    p = Partition.find(Partition.TYPE_DATA, label=partName)
 
     if p != []:
         # we got something, see if we can mount it

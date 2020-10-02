@@ -1,15 +1,24 @@
 import json
 import os
 
+STOREDIR = '/eeprom'
+
+
 def save(key, value):
-    filename = '/eeprom/' + key + '.json'
+    try:
+        stat = os.stat(STOREDIR)
+    except:
+        os.mkdir(STOREDIR)
+
+    filename = STOREDIR + '/' + key + '.json'
     f = open(filename, 'w')
     json_str = json.dumps(value)
     f.write(json_str)
     f.close()
 
+
 def load(key, default = None):
-    filename = '/eeprom/' + key + '.json'
+    filename = STOREDIR + '/' + key + '.json'
 
     try:
         f = open(filename)

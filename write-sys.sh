@@ -5,6 +5,7 @@ while getopts p:b: flag
 	    case "${flag}" in
 	        p) PORT=${OPTARG};;
 	        b) BAUD=${OPTARG};;
+	        *) echo "bad flag -${flag}"
 	    esac
 	done
 if [[ -z "$PORT" ]]; then
@@ -24,7 +25,7 @@ if [[ -z "$BAUD" ]]; then
 fi
  
 esptool.py --chip esp32 -b 115200 -p $PORT read_flash 0x8000 0xc00 ptable.img
-PART_ADDR=`gen_esp32part.py ./ptable.img | grep vfs | awk -F',' '{print $4}'`
+PART_ADDR=`./gen_esp32part.py ./ptable.img | grep vfs | awk -F',' '{print $4}'`
 rm ptable.img
 echo "writing to port " ${PORT} " baud = " ${BAUD} " address = " ${PART_ADDR}
 esptool.py --chip esp32 -b ${BAUD} -p ${PORT} write_flash -z ${PART_ADDR} images/sys.img

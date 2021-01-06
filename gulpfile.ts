@@ -16,6 +16,8 @@ const EduBlocksPath = path.join(__dirname, '..', 'edublocks-micropython', 'web')
 
 const OttoPythonPath = path.join(__dirname, '..', 'OttoDIYPython');
 
+const OttoWebPath = path.join(__dirname, '..', 'OttoDIYPython', 'web');
+
 const dest = path.join(__dirname, 'sys-fs');
 
 const ExtNoGzip = ['.py', '.xml', '.mp3', '.wav', '.json', '.bmp']
@@ -68,7 +70,7 @@ gulp.task('bundle-edublocks', () => {
   ]);
 });
 
-gulp.task('bundle-otto', () => {
+gulp.task('bundle-otto-python', () => {
   return pump([
     gulp.src([`${OttoPythonPath}/*.py`], { base: OttoPythonPath }),
     debug({ title: 'bundle-ottopython' }),
@@ -77,4 +79,25 @@ gulp.task('bundle-otto', () => {
   ]);
 });
 
-gulp.task('default', gulp.series(['clean', 'bundle-core', 'bundle-panel', 'bundle-edublocks', 'bundle-otto']));
+gulp.task('bundle-otto-web', () => {
+  const assetsJsonPath = path.join(OttoWebPath, '..', 'assets.json');
+
+  if (!fs.existsSync(assetsJsonPath)) {
+    // throw new Error('EduBlocks source not found!');
+
+    return pump([]);
+  }
+
+  const assets: string[] = JSON.parse(fs.readFileSync(assetsJsonPath, 'utf-8'));
+
+  const assetPaths = assets.map((asset) => path.join(OttoWebPath, asset));
+
+  return pump([
+    gulp.src(assetPaths, { base: OttoWebPath }),
+    debug({ title: 'bundle-ottoweb' }),
+    ...compressionStages(),
+    gulp.dest(path.join(dest, 'web')),
+  ]);
+});
+
+gulp.task('default', gulp.series(['clean', 'bundle-core', 'bundle-panel', 'bundle-edublocks', 'bundle-otto-python', 'bundle-otto-web']));

@@ -69,24 +69,35 @@ def _start_server(handler):
             bufs = None
 
             while True:
-                chunk = client_s.recv(128)
+                try:
+                    chunk = client_s.recv(1024)
+                    if len(chunk) == 0:
+                        break
+                except:
+                    break
 
                 if buf == None:
                     buf = chunk
                 else:
                     buf += chunk
 
-                bufs = buf.decode('utf-8')
+                if buf is not None:
+                    bufs = buf.decode('utf-8')
 
                 if '\r\n\r\n' in bufs:
                     break
 
-            lines = bufs.split("\r\n")
+            if bufs is not None:
+                lines = bufs.split("\r\n")
 
-            first_line_parts = lines[0].split()
+                first_line_parts = lines[0].split()
+            else:
+                first_line_parts = []
 
             if len(first_line_parts) < 3:
-                return
+#                return
+                client_s.close()
+                continue
 
             (request_method, pathAndQuery, _) = first_line_parts
 

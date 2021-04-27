@@ -18,12 +18,21 @@ const OttoPythonPath = path.join(__dirname, '..', 'OttoDIYPython');
 
 const OttoWebPath = path.join(__dirname, '..', 'OttoDIYPython', 'web');
 
+const TempSensorPythonPath = path.join(__dirname, '..', 'tempSensor');
+
+const TempSensorWebPath = path.join(__dirname, '..', 'tempSensor', 'web');
+
 const dest = path.join(__dirname, 'sys-fs');
 
 const ExtNoGzip = ['.py', '.xml', '.mp3', '.wav', '.json', '.bmp']
 
-const compressionStages = () => [
+/*const compressionStages = () => [
   gulpif((f) => f.extname === '.js', uglify()),
+  gulpif((f) => ExtNoGzip.indexOf(f.extname) === -1, gzip({ gzipOptions: { level: 9 } })),
+];
+*/
+const compressionStages = () => [
+  gulpif((f) => !f.path.endsWith('.min.js') && f.path.endsWith('.js'), uglify()),
   gulpif((f) => ExtNoGzip.indexOf(f.extname) === -1, gzip({ gzipOptions: { level: 9 } })),
 ];
 
@@ -100,4 +109,36 @@ gulp.task('bundle-otto-web', () => {
   ]);
 });
 
-gulp.task('default', gulp.series(['clean', 'bundle-core', 'bundle-panel', 'bundle-edublocks', 'bundle-otto-python', 'bundle-otto-web']));
+gulp.task('bundle-tempSensor-python', () => {
+  return pump([
+    gulp.src([`${TempSensorPythonPath}/*.py`], { base:TempSensorPythonPath }),
+    debug({ title: 'bundle-tempSensor-python' }),
+    ...compressionStages(),
+    gulp.dest(path.join(dest, 'lib')),
+  ]);
+});
+
+gulp.task('bundle-tempSensor-web', () => {
+  const assetsJsonPath = path.join(TempSensorWebPath, '..', 'assets.json');
+
+  if (!fs.existsSync(assetsJsonPath)) {
+    // throw new Error('EduBlocks source not found!');
+
+    return pump([]);
+  }
+
+  const assets: string[] = JSON.parse(fs.readFileSync(assetsJsonPath, 'utf-8'));
+
+  const assetPaths = assets.map((asset) => path.join(TempSensorWebPath, asset));
+
+  return pump([
+    gulp.src(assetPaths, { base: TempSensorWebPath }),
+    debug({ title: 'bundle-tempSensor-web' }),
+    ...compressionStages(),
+    gulp.dest(path.join(dest, 'web')),
+  ]);
+});
+
+gulp.task('default', gulp.series(['clean', 'bundle-core', 'bundle-panel', 'bundle-edublocks']));
+gulp.task('otto', gulp.series(['clean', 'bundle-core', 'bundle-panel', 'bundle-edublocks', 'bundle-otto-python', 'bundle-otto-web']));
+gulp.task('tempSensor', gulp.series(['clean', 'bundle-core', 'bundle-panel', 'bundle-tempSensor-python', 'bundle-tempSensor-web']));

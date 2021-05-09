@@ -70,7 +70,7 @@ const init = () => {
 
         <button
           className='App__tab App__tab--unhighlight'
-          onclick={() => window.location.href = '/edu.html'}>EduBlocks
+          onclick={() => window.location.href = mainPage}>{mainTitle}
         </button>
       </div>
 

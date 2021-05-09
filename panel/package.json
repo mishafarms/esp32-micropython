@@ -13,6 +13,7 @@
   },
   "scripts": {
     "start": "parcel web/index.html",
-    "build": "rm -f dist/* && parcel build web/index.html"
+    "build": "rm -f dist/* && parcel build web/index.html",
+    "post": "rm dist/mainInfo* && cp web/mainInfo.js dist && sed -i -r -e 's/mainInfo.[a-z0-9]+/mainInfo/' dist/index.html"
   }
 }

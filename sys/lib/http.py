@@ -3,6 +3,7 @@ import os
 import json
 import _thread
 
+handlers = []
 
 def get_file(file):
     src_size = -1
@@ -56,6 +57,8 @@ def _start_server(handler):
     s.bind(addr)
     s.setblocking(True)
     s.listen(5)
+
+    handlers.append(handler)
 
     while True:
         sock = s
@@ -158,7 +161,10 @@ def _start_server(handler):
                 except:
                     return respond_with_error('400', 'Invalid Request', 'Invalid JSON: ' + json_str)
 
-            response = handler(request_method, path, post_json)
+            for hdlr in handlers:
+                response = hdlr(request_method, path, post_json)
+                if response:
+                    break
 
             if not response:
                 response = {'file': path}
@@ -211,7 +217,8 @@ def _start_server(handler):
                 respond_with_error(404, 'Not found', 'Not found')
 
         except Exception as e:
-            print("Exception", e)
+            print("http.py: Exception", e)
+            sys.print_exception(e)
         finally:
             client_s.close()
 

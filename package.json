@@ -27,9 +27,10 @@
     "umount-sys-linux": "sudo umount ./sys-fs",
     "bundle": "gulp",
     "bundle-otto": "gulp otto",
-    "bundle-tempSensor": "gulp tempSensor",
+    "bundle-tempSensor": "gulp targetTask --target tempSensor",
+    "bundle-target": "gulp targetTask",
     "flash-erase": "esptool.py --chip esp32 -b 406800 erase_flash",
-    "flash-micropython": "esptool.py --chip esp32 -b 406800 write_flash -z 0x1000 images/mp.bin",
+    "flash-micropython": "esptool.py --chip esp32 -b 406800 write_flash -z 0x10000 images/mp.bin",
     "flash-sys": "./write-sys.sh"
   },
   "dependencies": {}

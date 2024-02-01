@@ -8,6 +8,38 @@ import debug = require('gulp-debug');
 import gzip = require('gulp-gzip');
 import gulpif = require('gulp-if');
 
+interface argType {
+  target: string
+}
+// fetch command line arguments
+const arg: Record<string, any> = (argList => {
+
+  let arg: Record<string, any> = {}, a, opt, thisOpt, curOpt;
+  for (a = 0; a < argList.length; a++) {
+
+    thisOpt = argList[a].trim();
+    opt = thisOpt.replace(/^\-+/, '');
+
+    if (opt === thisOpt) {
+
+      // argument value
+      if (curOpt) arg[curOpt] = opt;
+      curOpt = null;
+
+    } else {
+
+      // argument name
+      curOpt = opt;
+      arg[curOpt] = true;
+
+    }
+  }
+
+  return arg;
+
+})(process.argv);
+
+
 const CorePath = path.join(__dirname, 'sys');
 
 const PanelPath = path.join(__dirname, 'panel', 'dist');
@@ -142,3 +174,58 @@ gulp.task('bundle-tempSensor-web', () => {
 gulp.task('default', gulp.series(['clean', 'bundle-core', 'bundle-panel', 'bundle-edublocks']));
 gulp.task('otto', gulp.series(['clean', 'bundle-core', 'bundle-panel', 'bundle-edublocks', 'bundle-otto-python', 'bundle-otto-web']));
 gulp.task('tempSensor', gulp.series(['clean', 'bundle-core', 'bundle-panel', 'bundle-tempSensor-python', 'bundle-tempSensor-web']));
+
+gulp.task('target-web', () => {
+  let targetWebPath = "";
+
+  if (arg['target']) {
+    targetWebPath = path.join(__dirname, '..', arg['target'], 'web');
+  }
+  else {
+    // throw new Error('Target not found in args!');
+    debug({title: 'target not passed in args'});
+    throw new Error('Target not passed in args');
+  }
+
+  const assetsJsonPath = path.join(targetWebPath, '..', 'assets.json');
+
+  if (!fs.existsSync(assetsJsonPath)) {
+    // throw new Error('EduBlocks source not found!');
+
+    debug({title: 'asset file not found'});
+    throw new Error('asset file not found');
+  }
+
+  const assets: string[] = JSON.parse(fs.readFileSync(assetsJsonPath, 'utf-8'));
+
+  const assetPaths = assets.map((asset) => path.join(targetWebPath, asset));
+
+  return pump([
+      gulp.src(assetPaths, { base: targetWebPath }),
+      debug({title: 'bundel-' + targetWebPath}),
+      ...compressionStages(),
+      gulp.dest(path.join(dest, 'web')),
+  ]);
+})
+
+gulp.task('target-python', () => {
+  let targetPythonPath = "";
+
+  if (arg['target']) {
+    targetPythonPath = path.join(__dirname, '..', arg['target']);
+
+    return pump([
+      gulp.src([`${targetPythonPath}/*.py`], {base: targetPythonPath}),
+      debug({title: 'bundle-' + arg['target'] + '- Python'}),
+      ...compressionStages(),
+      gulp.dest(path.join(dest, 'lib')),
+    ]);
+  }
+  else {
+    // throw new Error('Target not found in args!');
+    debug({title: 'target not passed in args'});
+    throw new Error('Target not passed in args');
+  }
+})
+
+gulp.task('targetTask', gulp.series(['clean', 'bundle-core', 'bundle-panel', 'target-python', 'target-web']));

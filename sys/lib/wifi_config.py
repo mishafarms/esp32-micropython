@@ -1,17 +1,18 @@
 import store
 
+
 def get_network_saved_list():
-    return store.load('networks', [])
+    return store.load('networks', [], 'Network')
 
 
 def add_network_saved(network):
-    if not 'ssid' in network:
+    if 'ssid' not in network:
         raise ValueError()
 
-    if not 'pass' in network:
+    if 'pass' not in network:
         raise ValueError()
 
-    network_saved_list = store.load('networks', [])
+    network_saved_list = store.load('networks', [], 'Network')
 
     # Remove a previous entry if it was there...
     network_saved_list = [
@@ -19,4 +20,4 @@ def add_network_saved(network):
 
     network_saved_list.append(network)
 
-    store.save('networks', network_saved_list)
+    store.save('networks', network_saved_list, 'Network')

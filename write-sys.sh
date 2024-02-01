@@ -19,7 +19,7 @@ fi
 
 if [[ -z "$BAUD" ]]; then
 	if [[ -z "${ESPBAUD}" ]]; then
-		BAUD="115200"
+		BAUD="921600"
 	else
 		BAUD="${ESPBAUD}"
 	fi
@@ -27,9 +27,9 @@ fi
  
 if [[ -z "$CHIP" ]]; then
 	if [[ -z "${ESPCHIP}" ]]; then
-		BAUD="esp32"
+		CHIP="esp32"
 	else
-		BAUD="${ESPCHIP}"
+		CHIP="${ESPCHIP}"
 	fi
 fi
  

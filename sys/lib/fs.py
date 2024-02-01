@@ -2,7 +2,7 @@ import os
 import json
 
 
-def listdir(cwd = '.'):
+def listdir(cwd='.'):
     filenames = os.listdir(cwd)
 
     files = []

@@ -9,6 +9,7 @@ import _thread
 ap_if = 0
 sta_if = 0
 
+
 def startup():
     sleep_ms(50)
     
@@ -19,6 +20,7 @@ def startup():
 
     ap_if.active(True)
     sta_if.active(True)
+
 
 _thread.start_new_thread(startup, ())
 
@@ -32,7 +34,7 @@ def get_status():
     return status
 
 
-def get_network_list():
+def _get_network_list():
     networks = sta_if.scan()
 
     network_list = []
@@ -50,8 +52,30 @@ def get_network_list():
 
     return network_list
 
+def get_network_list():
+    retry_counter = 0
+    retry_max = 3
+    network_list = []
+
+    while retry_counter < retry_max:
+        try:
+            network_list = _get_network_list()
+            break  # If the function call did not raise an exception, break from the loop
+        except Exception as e:
+            print(f"Attempt {retry_counter + 1} failed with error: {str(e)}")
+            retry_counter += 1
+            if retry_counter < retry_max:  # Don't sleep on the last attempt
+                sleep_ms(150)
+
+    if retry_counter == retry_max:
+        print("Failed to get network list after 3 attempts")
+    else:
+        print("Successfully retrieved network list")
+
+    return network_list
 
 def connect(ssid, password) -> str:
+    connected = False
     sta_if.active(True)
 
     sta_if.disconnect()
@@ -60,7 +84,7 @@ def connect(ssid, password) -> str:
 
     sta_if.connect(ssid, password)
 
-    for attempt in range(10):
+    for _attempt in range(10):
         connected = sta_if.isconnected()
 
         if connected:
@@ -81,7 +105,7 @@ def connect(ssid, password) -> str:
 #        ap_if.active(False)
 
         return ip_address
-#    else:
+    else:
 #        screen.print_line('Failed!', 0)
 
         return None
@@ -90,7 +114,7 @@ def connect(ssid, password) -> str:
 def connect_and_save(ssid, password) -> str:
     ip_address = connect(ssid, password)
 
-    if not ip_address == None:
+    if ip_address is not None:
         wifi_config.add_network_saved({'ssid': ssid, 'pass': password})
 
     return ip_address

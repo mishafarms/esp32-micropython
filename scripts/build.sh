@@ -9,15 +9,18 @@ else
     exit 1
 fi
 
-cd ../edublocks-micropython
+pushd ../edublocks-micropython
 yarn
 yarn run build
 
-cd ../esp32-micropython/panel
+popd
+pushd panel
+#cd ../esp32-micropython/panel
 yarn
 yarn run build
 
-cd ../
+popd
+#cd ../
 
 yarn
 yarn run mount-sys-$OS

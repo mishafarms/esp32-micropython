@@ -2,11 +2,12 @@ import socket
 import os
 import json
 import _thread
+import sys
 
 handlers = []
 
+
 def get_file(file):
-    src_size = -1
 
     try:
         src_path = '/web/' + file + '.gz'
@@ -70,16 +71,18 @@ def _start_server(handler):
 
             buf = None
             bufs = None
+            lines = None
+            response = None
 
             while True:
                 try:
                     chunk = client_s.recv(1024)
                     if len(chunk) == 0:
                         break
-                except:
+                except Exception as _:
                     break
 
-                if buf == None:
+                if buf is None:
                     buf = chunk
                 else:
                     buf += chunk
@@ -98,7 +101,6 @@ def _start_server(handler):
                 first_line_parts = []
 
             if len(first_line_parts) < 3:
-#                return
                 client_s.close()
                 continue
 
@@ -113,6 +115,7 @@ def _start_server(handler):
             post_json = {}
 
             def respond_with_cors():
+                nonlocal header
                 header = ''
 
                 header += 'HTTP/1.1 200 OK\r\n'
@@ -126,6 +129,9 @@ def _start_server(handler):
                 client_s.sendall(bytes(header, 'utf-8'))
 
             def respond_with_error(code, message, body):
+                nonlocal header
+                nonlocal data
+
                 header = ''
 
                 data = bytes(body, 'utf-8')
@@ -153,12 +159,12 @@ def _start_server(handler):
                     try:
                         if line.index('x-json') == 0:
                             (_, json_str) = line.split(': ')
-                    except ValueError as e:
+                    except ValueError as _:
                         pass
 
                 try:
                     post_json = json.loads(json_str)
-                except:
+                except Exception as _:
                     return respond_with_error('400', 'Invalid Request', 'Invalid JSON: ' + json_str)
 
             for hdlr in handlers:
@@ -166,7 +172,7 @@ def _start_server(handler):
                 if response:
                     break
 
-            if not response:
+            if response is None:
                 response = {'file': path}
 
             if 'json' in response:
@@ -195,7 +201,7 @@ def _start_server(handler):
                 if src_size != -1:
                     header += 'HTTP/1.1 200 OK\r\n'
                     header += 'Content-Type: ' + content_type + '\r\n'
-                    if src_enc != None:
+                    if src_enc is not None:
                         header += 'Content-Encoding: ' + src_enc + '\r\n'
                     header += 'Content-Length: ' + str(src_size) + '\r\n'
                     header += '\r\n'
@@ -203,12 +209,17 @@ def _start_server(handler):
                     client_s.sendall(bytes(header, 'utf-8'))
 
                     if request_method == 'GET':
-                        with open(src_path, 'r') as f:
+                        with open(src_path, 'rb') as f:
                             while True:
                                 # TODO CH use buffer and readinto
                                 chunk = f.read(1024)
-                                if chunk != '':
-                                    client_s.sendall(chunk)
+                                if chunk:
+                                    try:
+                                        client_s.sendall(chunk)
+                                    except OSError as _:
+                                        # I am not sure why we got this
+                                        pass
+
                                 else:
                                     break
                 else:

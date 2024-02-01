@@ -30,7 +30,7 @@ def handler(method, path, post_json):
 
             ip_address = wifi.connect_and_save(ssid, password)
 
-            if ip_address == None:
+            if ip_address is None:
                 return {'json': {'status': 'failed'}}
 
             return {'json': {'status': 'connected', 'ip_address': ip_address}}
@@ -40,7 +40,7 @@ def handler(method, path, post_json):
 
             ip_address = wifi.connect_to_saved(ssid)
 
-            if ip_address == None:
+            if ip_address is None:
                 return {'json': {'status': 'failed'}}
 
             return {'json': {'status': 'connected', 'ip_address': ip_address}}

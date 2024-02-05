@@ -3594,7 +3594,7 @@ __metadata:
     gulp-if: "npm:^2.0.2"
     gulp-uglify: "npm:^3.0.0"
     pump: "npm:^3.0.0"
-    shelljs: "npm:^0.8.2"
+    shelljs: "npm:^0.8.5"
     ts-node: "npm:^6.0.5"
     typescript: "npm:^2.9.1"
   languageName: unknown
@@ -3713,16 +3713,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"shelljs@npm:^0.8.2":
-  version: 0.8.2
-  resolution: "shelljs@npm:0.8.2"
+"shelljs@npm:^0.8.5":
+  version: 0.8.5
+  resolution: "shelljs@npm:0.8.5"
   dependencies:
     glob: "npm:^7.0.0"
     interpret: "npm:^1.0.0"
     rechoir: "npm:^0.6.2"
   bin:
-    shjs: ./bin/shjs
-  checksum: 10c0/a8a4eb34a5fe83101e04ea0588bedf6b19edd181316006aa7e3f21800c706a0884d83373774527f42e9358d78ce217fffe736443823d2d099783e6a4fd14bc5e
+    shjs: bin/shjs
+  checksum: 10c0/feb25289a12e4bcd04c40ddfab51aff98a3729f5c2602d5b1a1b95f6819ec7804ac8147ebd8d9a85dfab69d501bcf92d7acef03247320f51c1552cec8d8e2382
   languageName: node
   linkType: hard
 

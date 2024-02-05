@@ -1,4 +1,5 @@
 {
+  "license": "MIT",
   "devDependencies": {
     "@types/del": "^3.0.1",
     "@types/gulp": "^4.0.5",

@@ -65,7 +65,7 @@ const ExtNoGzip = ['.py', '.xml', '.mp3', '.wav', '.json', '.bmp']
 */
 const compressionStages = () => [
   gulpif((f) => !f.path.endsWith('.min.js') && f.path.endsWith('.js'), uglify()),
-  gulpif((f) => ExtNoGzip.indexOf(f.extname) === -1, gzip({ gzipOptions: { level: 9 } })),
+  gulpif((f) => ExtNoGzip.indexOf(path.extname(f.path)) === -1, gzip({ gzipOptions: { level: 9 } })),
 ];
 
 gulp.task('clean', () => {

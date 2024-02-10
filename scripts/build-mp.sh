@@ -24,7 +24,7 @@ if [[ -z "$BAUD" ]]; then
 		BAUD="${ESPBAUD}"
 	fi
 fi
- 
+
 if [[ -z "$CHIP" ]]; then
 	if [[ -z "${ESPCHIP}" ]]; then
 		CHIP="esp32"
@@ -32,9 +32,9 @@ if [[ -z "$CHIP" ]]; then
 		CHIP="${ESPCHIP}"
 	fi
 fi
- 
-esptool.py --chip $CHIP -b 115200 -p $PORT read_flash 0x8000 0xc00 ptable.img
-PART_ADDR=`./gen_esp32part.py ./ptable.img | grep vfs | awk -F',' '{print $4}'`
-rm ptable.img
-echo "writing to port " ${PORT} " baud = " ${BAUD} " address = " ${PART_ADDR}
-esptool.py --chip $CHIP -b ${BAUD} -p ${PORT} write_flash -z ${PART_ADDR} images/sys.img
+
+WD=$(pwd)
+
+(cd ../micropython_latest/ports/esp32 && make BOARD=WROVER_16M BOARD_VARIANT=OTA_USER &&
+ cp build-WROVER_16M-OTA_USER/micropython.bin "${WD}/images/mp.bin" &&
+ cp build-WROVER_16M-OTA_USER/partition_table/partition-table.bin "${WD}/images")

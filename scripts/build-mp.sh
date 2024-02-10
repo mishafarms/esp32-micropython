@@ -35,6 +35,6 @@ fi
 
 WD=$(pwd)
 
-(cd ../micropython_latest/ports/esp32 && make BOARD=WROVER_16M BOARD_VARIANT=OTA_USER &&
+(cd ../micropython/ports/esp32 && make BOARD=WROVER_16M BOARD_VARIANT=OTA_USER &&
  cp build-WROVER_16M-OTA_USER/micropython.bin "${WD}/images/mp.bin" &&
  cp build-WROVER_16M-OTA_USER/partition_table/partition-table.bin "${WD}/images")

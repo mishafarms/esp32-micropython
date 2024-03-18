@@ -40,6 +40,6 @@
     "flash-partition": "esptool.py --chip esp32 -b 115200 write_flash 0x8000 images/partition-table.bin",
     "flash-otadata": "esptool.py --chip esp32 -b 115200 write_flash 0x510000 images/ota_data_initial.bin",
     "flash-sys": "scripts/write-sys.sh",
-    "flash-merged": "scripts/write-merge.sh"
+    "flash-merged": "scripts/write-merged.sh"
   }
 }

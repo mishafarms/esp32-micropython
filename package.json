@@ -36,6 +36,7 @@
     "flash-erase": "esptool.py --chip esp32 -b 406800 erase_flash",
     "flash-micropython": "yarn flash-partition && esptool.py --chip esp32 -b 406800 write_flash -z 0x10000 images/mp.bin",
     "flash-partition": "esptool.py --chip esp32 -b 115200 write_flash 0x8000 images/partition-table.bin",
-    "flash-sys": "scripts/write-sys.sh"
+    "flash-sys": "scripts/write-sys.sh",
+    "flash-merged": "scripts/write-merge.sh"
   }
 }

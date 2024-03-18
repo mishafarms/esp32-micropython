@@ -58,6 +58,7 @@ For Linux (the default):
 ## Build Micropython
 
 	cd ~/src/esp32-micropython
+ 	yarn
 	yarn run build-mp (if you get an error run indented lines)
 		cd ~/src/micropython/ports/esp32/
 		git config --global --add safe.directory /opt/esp/idf/components/openthread/openthread

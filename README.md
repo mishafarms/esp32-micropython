@@ -1,13 +1,11 @@
 # ESP32 MicroPython
 
 Very rough install guide...
-
 ## Requirements
 
     Node.js (with `yarn` if building)
-    Python 3
+    Python 3.7
     esptool.py (`pip3 install esptool`)
-
 ## Environment
 
 Need to discover port path on your system. Typically examples:
@@ -23,7 +21,6 @@ For Windows (use Device Manager to discover the actual port number):
 For Linux (the default):
 
     export ESPTOOL_PORT=/dev/ttyUSB0
-
 ## Quick Install
 
     cd ~/src
@@ -32,9 +29,8 @@ For Linux (the default):
     export ESPTOOL_PORT=/dev/ttyUSB0 (Windows:ESPTOOL_PORT=COM3)
     (plug in the Esp32)
     yarn run flash-merged
-
 ## Full Build
-
+#### Clone Archives 
     (git clone all arcives to the ~/src folder)
 	cd ~/src
 	git clone https://github.com/mishafarms/esp32-micropython.git
@@ -42,20 +38,17 @@ For Linux (the default):
 	git clone https://github.com/mishafarms/micropython.git
 	git clone https://github.com/mishafarms/OttoDIYPython.git
 	export ESPTOOL_PORT=/dev/ttyUSB0
-
-## Build panel-web-app
+#### Build panel-web-app
 
 	cd ~/src/esp32-micropython/panel
 	yarn
 	yarn run build
-
-## Build EduBlocks
+#### Build EduBlocks
 
 	cd ~/src/edublocks-micropython
 	yarn
 	yarn run build
-
-## Build Micropython
+#### Build Micropython
 
 	cd ~/src/esp32-micropython
  	yarn
@@ -67,8 +60,7 @@ For Linux (the default):
 	yarn run build-mp (if you get an error run indented line)
 		yarn install
 	yarn run build-mp		
-
-## Bundle assets
+#### Bundle assets
 
 	cd ~/src/esp32-micropython
 	yarn
@@ -77,8 +69,8 @@ For Linux (the default):
 	yarn run bundle-otto
 	yarn run umount-sys-linux        # Or: yarn run umount-sys-osx
 	yarn run merge
+#### Flash on to ESP32
 
-# Flash on to ESP32
 	cd ~/src/esp32-micropython
 	yarn run flash-erase (Optional)
 	yarn run flash-merged

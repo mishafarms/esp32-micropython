@@ -31,7 +31,7 @@
     "build-panel": "cd panel && yarn build",
     "bundle": "cp -f panel/default/mainInfo.js panel/web/ && yarn build-panel && gulp",
     "bundle-edu": "cp -f ../edublocks-micropython/web/mainInfo.js panel/web/ && yarn build-panel && gulp",
-    "bundle-otto": "cp -f ../OttoDIYPython/web/mainInfo.js panel/web/ && gulp otto",
+    "bundle-otto": "cp -f ../OttoDIYPython/web/mainInfo.js panel/web/ && yarn build-panel && gulp otto",
     "bundle-tempSensor": "cp -f ../tempSensor/web/mainInfo.js panel/web/ && yarn build-panel && gulp tempSensor",
     "bundle-target": "cp -f ../MovingTarget/web/mainInfo.js panel/web/ && yarn build-panel && gulp targetTask --target MovingTarget",
     "flash-erase": "esptool.py --chip esp32 -b 406800 erase_flash",

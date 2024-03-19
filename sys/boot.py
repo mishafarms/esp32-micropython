@@ -6,7 +6,9 @@ from lib import mountPart
 from lib import wifi
 from lib import panel
 import time
-from machine import TouchPad
+
+# This doesn't work for all ESP32 devices so skip it for now
+# from machine import TouchPad
 from machine import Pin
 
 gc.collect()
@@ -26,12 +28,12 @@ gc.collect()
 
 sys.path.append('/user')
 
-touch = TouchPad(Pin(14))
+#touch = TouchPad(Pin(14))
 
-if touch.read() > 500 :
-    try:
-        import main
-    except:
-        print('Could not find main start up script')
-else:
-    print("Skipping main.py")
+#if touch.read() > 500 :
+try:
+    import main
+except:
+    print('Could not find main start up script')
+#else:
+#    print("Skipping main.py")

@@ -22,6 +22,7 @@
     "typescript": "^2.9.1"
   },
   "scripts": {
+    "merge": "scripts/build-merge.sh",
     "mount-sys-osx": "hdiutil attach images/sys.img -mountpoint ./sys-fs",
     "umount-sys-osx": "hdiutil detach ./sys-fs",
     "mount-sys-linux": "sudo mount -o uid=$(id -u),gid=$(id -g) images/sys.img ./sys-fs",
@@ -34,8 +35,11 @@
     "bundle-tempSensor": "cp -f ../tempSensor/web/mainInfo.js panel/web/ && yarn build-panel && gulp tempSensor",
     "bundle-target": "cp -f ../MovingTarget/web/mainInfo.js panel/web/ && yarn build-panel && gulp targetTask --target MovingTarget",
     "flash-erase": "esptool.py --chip esp32 -b 406800 erase_flash",
-    "flash-micropython": "yarn flash-partition && esptool.py --chip esp32 -b 406800 write_flash -z 0x10000 images/mp.bin",
+    "flash-micropython": "yarn flash-bootloader && yarn flash-partition && yarn flash-otadata && esptool.py --chip esp32 -b 406800 write_flash -z 0x10000 images/micropython.bin",
+    "flash-bootloader": "esptool.py --chip esp32 -b 115200 write_flash 0x1000 images/bootloader.bin",
     "flash-partition": "esptool.py --chip esp32 -b 115200 write_flash 0x8000 images/partition-table.bin",
-    "flash-sys": "scripts/write-sys.sh"
+    "flash-otadata": "esptool.py --chip esp32 -b 115200 write_flash 0x510000 images/ota_data_initial.bin",
+    "flash-sys": "scripts/write-sys.sh",
+    "flash-merged": "scripts/write-merged.sh"
   }
 }

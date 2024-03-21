@@ -35,10 +35,7 @@ fi
 
 WD=$(pwd)
 
-(cd ../micropython/ports/esp32 && make BOARD=WROVER_16M BOARD_VARIANT=OTA_USER &&
- cp build-WROVER_16M-OTA_USER/micropython.bin "${WD}/images" &&
- cp build-WROVER_16M-OTA_USER/partition_table/partition-table.bin "${WD}/images" &&
- cp build-WROVER_16M-OTA_USER/bootloader/bootloader.bin "${WD}/images" &&
- cp build-WROVER_16M-OTA_USER/ota_data_initial.bin "${WD}/images" && 
- cd "${WD}"
-)
+( cd ../micropython/ports/esp32 && make BOARD=WROVER_16M BOARD_VARIANT=USER &&
+ cp build-WROVER_16M-USER/micropython.bin "${WD}/images" &&
+ cp build-WROVER_16M-USER/partition_table/partition-table.bin "${WD}/images" &&
+ cp build-WROVER_16M-USER/bootloader/bootloader.bin "${WD}/images" )

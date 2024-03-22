@@ -28,6 +28,12 @@ gc.collect()
 
 sys.path.append('/user')
 
+try:
+    import uftpd
+except ImportError:
+    # if we fail to load this not a big deal
+    pass
+
 #touch = TouchPad(Pin(14))
 
 #if touch.read() > 500 :

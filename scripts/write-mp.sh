@@ -6,6 +6,11 @@ script_dir=$(dirname "$BASH_SOURCE")
 # Source the common.sh
 source "${script_dir}/common.sh"
 
+process_flags "$@"
+assign_default_value "PORT" "ESPPORT" "/dev/ttyUSB0"
+assign_default_value "BAUD" "ESPBAUD" "921600"
+assign_default_value "CHIP" "ESPCHIP" "esp32"
+
 calculate_addresses
 
 firmware_parts=(
@@ -31,5 +36,7 @@ for part in "${firmware_parts[@]}"; do
     fi
 done
 
-esptool.py --chip "${CHIP}" merge_bin -o images/merged-firmware.bin --flash_mode dio --flash_size 16MB \
+echo "writing image to port ${PORT} baud = ${BAUD}"
+
+esptool.py -p "${PORT}" -b "${BAUD}" --before default_reset --after hard_reset --chip "${CHIP}" write_flash --flash_mode dio \
    --flash_freq 40m "${firmware_opts[@]}"

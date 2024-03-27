@@ -1,54 +1,45 @@
 #!/bin/bash
 
-while getopts p:b:c:m:v: flag
-	do
-	    case "$flag" in
-	        c) CHIP=${OPTARG};;
-	        p) PORT=${OPTARG};;
-	        b) BAUD=${OPTARG};;
-	        m) BOARD=${OPTARG};;
-	        v) BOARD_VARIANT=${OPTARG};;
-	        *) echo "bad flag -${flag}"
-	    esac
-	done
-if [[ -z "$PORT" ]]; then
-	if [[ -z "${ESPPORT}" ]]; then
-		PORT="/dev/ttyUSB0"
-	else
-		PORT="${ESPPORT}"
-	fi
-fi
+# Get the directory of the current script
+script_dir=$(dirname "$BASH_SOURCE")
 
-if [[ -z "$BAUD" ]]; then
-	if [[ -z "${ESPBAUD}" ]]; then
-		BAUD="921600"
-	else
-		BAUD="${ESPBAUD}"
-	fi
-fi
+# Source the common.sh
+source "${script_dir}/common.sh"
 
-if [[ -z "$CHIP" ]]; then
-	if [[ -z "${ESPCHIP}" ]]; then
-		CHIP="esp32"
-	else
-		CHIP="${ESPCHIP}"
-	fi
-fi
+function perform_build_operations() {
+  local board=$1
+  local board_variant=$2
+  local tween=$3
+  local wd=$4
 
-if [[ -z "$BOARD" ]]; then
-  BOARD = "WROVER_16M"
-fi
+  cd ../micropython && make -C mpy-cross
+  cd ports/esp32 && make submodules && make BOARD="${board}" BOARD_VARIANT="${board_variant}"
 
-if [[ -z "$BOARD_VARIANT" ]]; then
-  TWEEN=""
-else
+  cp -v "build-${board}${tween}${board_variant}/micropython.bin" "${wd}/images"
+  cp -v "build-${board}${tween}${board_variant}/partition_table/partition-table.bin" "${wd}/images"
+  cp -v "build-${board}${tween}${board_variant}/bootloader/bootloader.bin" "${wd}/images"
+
+  if [[ -e "build-${board}${tween}${board_variant}/ota_data_initial.bin" ]]; then
+    cp -v "build-${board}${tween}${board_variant}/ota_data_initial.bin" "${wd}/images"
+  else
+    rm -f "${wd}/images/ota_data_initial.bin"
+  fi
+}
+
+process_flags "$@"
+
+assign_default_value "PORT" "/dev/ttyUSB0" "${PORT}"
+assign_default_value "BAUD" "921600" "${BAUD}"
+assign_default_value "CHIP" "esp32" "${CHIP}"
+assign_default_value "BOARD" "WROVER_16M" "${BOARD}"
+
+TWEEN=""
+if [[ -n "${BOARD_VARIANT}" ]]; then
   TWEEN="-"
 fi
 
 WD=$(pwd)
 
-( cd ../micropython && make -C mpy-cross && \
-  cd ports/esp32 && make submodules && make BOARD=$BOARD BOARD_VARIANT=$BOARD_VARIANT &&
-  cp -v build-$BOARD$TWEEN$BOARD_VARIANT/micropython.bin $WD/images &&
-  cp -v build-$BOARD$TWEEN$BOARD_VARIANT/partition_table/partition-table.bin $WD/images &&
-  cp -v build-$BOARD$TWEEN$BOARD_VARIANT/bootloader/bootloader.bin $WD/images )
+# Enclosed in parentheses to run it in a subshell
+# It will not change the current directory of the parent shell
+(perform_build_operations "${BOARD}" "${BOARD_VARIANT}" "${TWEEN}" "${WD}")

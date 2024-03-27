@@ -1,5 +1,13 @@
 #!/bin/bash
 
+# Function for yarn build
+yarn_build() {
+  cd "$1" || exit 2
+  yarn
+  yarn run build
+}
+
+# Identify OS
 if [[ "$OSTYPE" == "linux-gnu" ]]; then
     OS=linux
 elif [[ "$OSTYPE" == "darwin"* ]]; then
@@ -9,22 +17,16 @@ else
     exit 1
 fi
 
-pushd ../edublocks-micropython
-yarn
-yarn run build
+# Build Projects
+(yarn_build "../edublocks-micropython")
+(yarn_build "panel")
 
-popd
-pushd panel
-#cd ../esp32-micropython/panel
+# Execute remaining commands
 yarn
-yarn run build
-
-popd
-#cd ../
-
-yarn
+yarn run build-mp
+yarn run create-sys-img
 yarn run mount-sys-$OS
-yarn run bundle
+yarn run bundle-otto
 yarn run umount-sys-$OS
 yarn run flash-micropython
 yarn run flash-sys

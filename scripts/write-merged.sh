@@ -1,39 +1,17 @@
 #!/bin/bash
 
-while getopts p:b:c: flag
-	do
-	    case "${flag}" in
-	        c) CHIP=${OPTARG};;
-	        p) PORT=${OPTARG};;
-	        b) BAUD=${OPTARG};;
-	        *) echo "bad flag -${flag}"
-	    esac
-	done
-if [[ -z "$PORT" ]]; then
-	if [[ -z "${ESPPORT}" ]]; then
-		PORT="/dev/ttyUSB0"
-	else
-		PORT="${ESPPORT}"
-	fi
-fi
+# Get the directory of the current script
+script_dir=$(dirname "$BASH_SOURCE")
 
-if [[ -z "$BAUD" ]]; then
-	if [[ -z "${ESPBAUD}" ]]; then
-		BAUD="921600"
-	else
-		BAUD="${ESPBAUD}"
-	fi
-fi
- 
-if [[ -z "$CHIP" ]]; then
-	if [[ -z "${ESPCHIP}" ]]; then
-		CHIP="esp32"
-	else
-		CHIP="${ESPCHIP}"
-	fi
-fi
- 
+# Source the common.sh
+source "${script_dir}/common.sh"
+
+process_flags "$@"
+assign_default_value "PORT" "ESPPORT" "/dev/ttyUSB0"
+assign_default_value "BAUD" "ESPBAUD" "921600"
+assign_default_value "CHIP" "ESPCHIP" "esp32"
+
 echo "writing merged image to port ${PORT} baud = ${BAUD}"
-esptool.py -p "${PORT}" -b "${BAUD}" --before default_reset --after hard_reset --chip esp32 write_flash --flash_mode dio --flash_size 16MB --flash_freq 40m 0x0000 images/merged-firmware.bin
+esptool.py -p "${PORT}" -b "${BAUD}" --before default_reset --after hard_reset --chip "${CHIP}" write_flash --flash_mode dio --flash_size 16MB --flash_freq 40m 0x0000 images/merged-firmware.bin
 
 

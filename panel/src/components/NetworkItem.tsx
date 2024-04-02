@@ -12,7 +12,7 @@ export const NetworkItem = ({ network, onConnectClick }: NetworkItemProps) => {
   return (
     <li className='NetworkItem'>
       <span className='NetworkItem__ssid'>
-        {network.ssid}
+        {network.ssid}:
       </span>
 
       {

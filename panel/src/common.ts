@@ -9,12 +9,19 @@ export interface ActionReturn<State, Actions> {
 
 export type AppViewMode = 'status' | 'scan' | 'saved';
 
+export interface TabItem {
+  title: string;
+  link: string;
+}
+
 export interface AppState {
   view: AppViewMode;
 
   status: StatusState;
   scan: ScanState;
   saved: SavedState;
+  tabs: TabItem[];
+  tabsFetched: boolean;
 }
 
 export interface AppActions {
@@ -23,6 +30,10 @@ export interface AppActions {
   status: StatusActions;
   scan: ScanActions;
   saved: SavedActions;
+
+  fetchTabsAndSet(): (state: AppState, actions: AppActions) => Promise<void>;
+  setTabs: (tabs: TabItem[]) => (state: AppState) => Partial<AppState>;
+  setTabsFetched: (fetched: boolean) => (state: AppState) => Partial<AppState>;
 }
 
 export interface AppView {

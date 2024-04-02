@@ -1,3 +1,5 @@
+import {TabItem} from './common';
+
 export interface ApiClient {
   getStatus(): Promise<DeviceStatus>;
   getNetworks(): Promise<WifiNetwork[]>;
@@ -5,6 +7,8 @@ export interface ApiClient {
 
   connect(ssid: string, pass: string): Promise<ConnectResult>;
   connectSaved(ssid: string): Promise<ConnectResult>;
+
+  fetchDynamicTabs(): Promise<TabItem[]>;
 }
 
 export interface DeviceStatus {
@@ -19,10 +23,10 @@ export interface WifiNetwork {
   saved?: true;
 }
 
-export interface SavedNetwork {
-  ssid: string;
-  rssi: number;
-}
+// export interface SavedNetwork {
+//   ssid: string;
+//   rssi: number;
+// }
 
 export interface ConnectResult {
   status: 'connected' | 'failed';
@@ -67,11 +71,17 @@ export const newDummyApiClient = (): ApiClient => {
     },
 
     async connect(ssid: string, password: string) {
+      console.log(`ssid(${ssid}) and password(${password}) are unused`);
       throw new Error();
     },
 
     async connectSaved(ssid: string) {
-      throw new Error();
+        console.log(`ssid(${ssid}) is unused`);
+    throw new Error();
+    },
+
+    async fetchDynamicTabs() {
+      return [];
     },
   };
 };
@@ -80,17 +90,21 @@ export const newApiClient = (): ApiClient => {
   // This is a slight hack to test the panel running locally...
   const baseUrl = window.location.hostname === 'localhost' ? 'http://192.168.0.127' : '';
 
-  const doRequest = async <TData extends object>(path: string, postData: any = {}) => {
+  const doRequest = async <TData extends object>(path: string, postData: any = {}, method = 'POST') => {
     try {
-      const postJson = JSON.stringify(postData);
+      let headers = {};
 
-      // This is weird, but had issues parsing the POST body in MicroPython.
-      // So sending JSON as a header value instead...
-      const headers = new Headers({
-        'x-json': postJson,
-      });
+      if (method === 'POST') {
+        const postJson = JSON.stringify(postData);
 
-      const res = await window.fetch(`${baseUrl}/${path}`, { method: 'POST', headers });
+        // This is weird, but had issues parsing the POST body in MicroPython.
+        // So sending JSON as a header value instead...
+        headers = new Headers({
+          'x-json': postJson,
+        });
+      }
+
+      const res = await window.fetch(`${baseUrl}/${path}`, { method, headers });
 
       const data: TData = await res.json();
 
@@ -124,13 +138,17 @@ export const newApiClient = (): ApiClient => {
     },
 
     async connect(ssid: string, pass: string) {
-      const data = await doRequest<ConnectResult>('api', { method: 'connect', ssid, pass });
-
-      return data;
+      return await doRequest<ConnectResult>('api', {method: 'connect', ssid, pass});
     },
 
     async connectSaved(ssid: string) {
-      const data = await doRequest<ConnectResult>('api', { method: 'connect_saved', ssid });
+      return await doRequest<ConnectResult>('api', {method: 'connect_saved', ssid});
+    },
+
+    async fetchDynamicTabs() {
+      const data = await doRequest<TabItem[]>('mainTabs.json', {}, 'GET');
+
+      if (!Array.isArray(data)) throw new Error('Invalid response data');
 
       return data;
     },

@@ -14,11 +14,11 @@ firmware_parts=(
     "${APP_ADDR}:images/micropython.bin"
 )
 
-if [[ -n "${OTA_ADDR}" && "${OTA_ADDR}" -ne 0 ]]; then
-    firmware_parts+=("${OTA_ADDR}:images/ota_data_initial.bin")
+if [[ -n "${OTA_D_ADDR}" && "${OTA_D_ADDR}" -ne 0 ]]; then
+    firmware_parts+=("${OTA_D_ADDR}:images/ota_data_initial.bin")
 fi
 
-firmware_parts+=("${PART_ADDR}:images/sys.img")
+firmware_parts+=("${VFS_ADDR}:images/sys.img")
 
 firmware_opts=()
 for part in "${firmware_parts[@]}"; do

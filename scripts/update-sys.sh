@@ -1,28 +1,44 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-LINUX="linux-gnu"
-DARWIN="darwin*"
+# Get the directory of the current script
+script_dir=$(dirname "$BASH_SOURCE")
 
-set_os_type() {
-    if [[ "$OSTYPE" == "$LINUX" ]]; then
-        echo "linux"
-    elif [[ "$OSTYPE" == "$DARWIN" ]]; then
-        echo "osx"
-    else
-        echo "Invalid OS"
-        exit 1
-    fi
-}
+# Source the common.sh
+source "${script_dir}/common.sh"
+
+SCRIPT_NAME="$(basename "$0")"
+
+HELP_MSG="Usage: $SCRIPT_NAME [options]
+
+The options are:
+    -b <baud rate>
+    -c <chip type>
+    -f <LFS|FAT>
+    -p <port number>
+    -h                prints this help information
+
+defaults to LFS with no -f given"
+
+process_flags "$HELP_MSG" "$@"
+assign_default_value "PORT" "ESPPORT" "/dev/ttyUSB0"
+assign_default_value "BAUD" "ESPBAUD" "921600"
+assign_default_value "CHIP" "ESPCHIP" "esp32"
+assign_default_value "FILE_SYSTEM_TYPE" "ESPFSTYPE" "LFS"
+
+# to allow yarn to make the calls and still use the same port, baudrate and chip
+export ESPPORT="$PORT"
+export ESPBAUD="$BAUD"
+export ESPCHIP="$CHIP"
+export ESPFSTYPE="$FILE_SYSTEM_TYPE"
 
 run_commands() {
-    OS_TYPE=$(set_os_type)
-    echo "OS type is: $OS_TYPE"
-
+    set -e
     yarn
-    yarn run mount-sys-"$OS_TYPE"
+    yarn run mount-sys-"${FILE_SYSTEM_TYPE,,}"
     yarn run bundle-otto
-    yarn run umount-sys-"$OS_TYPE"
+    yarn run umount-sys-"${FILE_SYSTEM_TYPE,,}"
     yarn run flash-sys
+    set +e
 }
 
 run_commands

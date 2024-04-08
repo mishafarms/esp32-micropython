@@ -42,7 +42,8 @@ function convert_to_bytes {
 }
 
 process_flags "$@"
-assign_default_value "FILE_SYSTEM_TYPE" "FILE_SYSTEM_TYPE" "LFS"
+assign_default_value "FILE_SYSTEM_TYPE" "ESPFSTYPE" "LFS"
+export ESPFSTYPE="${FILE_SYSTEM_TYPE}"
 
 echo "FILE_SYSTEM_TYPE = ${FILE_SYSTEM_TYPE}"
 
@@ -59,13 +60,13 @@ if [ -f "$SYS_IMG" ]; then
   # Get the size of the file using wc (word count) utility in bytes
   file_size_bytes=$(wc -c <"$SYS_IMG")
 
-  if are_sizes_same "${file_size_bytes}" "${PART_SIZE}" ; then
+  if are_sizes_same "${file_size_bytes}" "${VFS_SIZE}" ; then
     echo "File sizes are the same."
   else
     echo "File sizes are different, we need to deal with it"
     # rm the file
     rm "${SYS_IMG}"
-    dd if=/dev/zero of="${SYS_IMG}" bs=1 count="${PART_SIZE}"
+    dd if=/dev/zero of="${SYS_IMG}" bs=1 count="${VFS_SIZE}"
   fi
 fi
 

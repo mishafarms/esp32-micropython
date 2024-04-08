@@ -1,7 +1,10 @@
 # common.sh
 
-function process_flags {
-    while getopts b:c:f:m:p:v: flag
+process_flags() {
+    local HELP_MSG=$1
+    shift  # Shift arguments so that getopts works on command-line arguments
+
+    while getopts b:c:f:m:p:v:s:h flag
     do
         case "${flag}" in
             b) BAUD=${OPTARG};;
@@ -10,7 +13,9 @@ function process_flags {
             m) BOARD=${OPTARG};;
             p) PORT=${OPTARG};;
             v) BOARD_VARIANT=${OPTARG};;
-            *) echo "Invalid flag -${flag}"
+            s) SECTIONS=${OPTARG} HASH_SPACE_SEPARATED=1;;
+            h) echo "$HELP_MSG"; exit 0;;
+            *) echo "$HELP_MSG"; exit 1;;
         esac
     done
 }
@@ -32,10 +37,10 @@ function assign_default_value {
 calculate_addresses() {
     APP_ADDR=0
     APP_SIZE=0
-    OTA_ADDR=0
-    OTA_SIZE=0
-    PART_ADDR=0
-    PART_SIZE=0
+    OTA_D_ADDR=0
+    OTA_D_SIZE=0
+    VFS_ADDR=0
+    VFS_SIZE=0
 
     if ! OUTPUT=$(./gen_esp32part.py images/partition-table.bin); then
         echo "gen_esp32part.py failed."
@@ -45,10 +50,10 @@ calculate_addresses() {
     APP_ADDR=$(echo "${OUTPUT}" | awk -F',' '/app/ {print $4}' | head -1)
     APP_SIZE=$(echo "${OUTPUT}" | awk -F',' '/app/ {print $5}' | head -1)
 
-    OTA_ADDR=$(echo "${OUTPUT}" | awk -F',' '/otadata/ {print $4}' | head -1)
-    OTA_SIZE=$(echo "${OUTPUT}" | awk -F',' '/otadata/ {print $5}' | head -1)
+    OTA_D_ADDR=$(echo "${OUTPUT}" | awk -F',' '/otadata/ {print $4}' | head -1)
+    OTA_D_SIZE=$(echo "${OUTPUT}" | awk -F',' '/otadata/ {print $5}' | head -1)
 
-    PART_ADDR=$(echo "${OUTPUT}" | awk -F',' '/vfs/ {print $4}' | head -1)
-    PART_SIZE=$(echo "${OUTPUT}" | awk -F',' '/vfs/ {print $5}' | head -1)
+    VFS_ADDR=$(echo "${OUTPUT}" | awk -F',' '/vfs/ {print $4}' | head -1)
+    VFS_SIZE=$(echo "${OUTPUT}" | awk -F',' '/vfs/ {print $5}' | head -1)
     return 0
 }

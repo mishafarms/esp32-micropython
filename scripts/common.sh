@@ -1,11 +1,12 @@
 # common.sh
 
 function process_flags {
-    while getopts b:c:m:p:v: flag
+    while getopts b:c:f:m:p:v: flag
     do
         case "${flag}" in
             b) BAUD=${OPTARG};;
             c) CHIP=${OPTARG};;
+            f) FILE_SYSTEM_TYPE=${OPTARG};;
             m) BOARD=${OPTARG};;
             p) PORT=${OPTARG};;
             v) BOARD_VARIANT=${OPTARG};;

@@ -41,6 +41,11 @@ function convert_to_bytes {
   echo $size_bytes
 }
 
+process_flags "$@"
+assign_default_value "FILE_SYSTEM_TYPE" "FILE_SYSTEM_TYPE" "LFS"
+
+echo "FILE_SYSTEM_TYPE = ${FILE_SYSTEM_TYPE}"
+
 SYS_IMG="images/sys.img"
 
 if ! calculate_addresses; then
@@ -56,14 +61,28 @@ if [ -f "$SYS_IMG" ]; then
 
   if are_sizes_same "${file_size_bytes}" "${PART_SIZE}" ; then
     echo "File sizes are the same."
-    exit 0
   else
     echo "File sizes are different, we need to deal with it"
     # rm the file
     rm "${SYS_IMG}"
+    dd if=/dev/zero of="${SYS_IMG}" bs=1 count="${PART_SIZE}"
   fi
 fi
 
-dd if=/dev/zero of="${SYS_IMG}" bs=1 count=0 count="${PART_SIZE}"
-mkfs.fat -F 12 -f 1 -S 4096 -r 512 -s 1 -n 'ROOT' "${SYS_IMG}"
+
+# Choose the file system based on the FILE_SYSTEM_TYPE
+if [[ "${FILE_SYSTEM_TYPE^^}" == "FAT" ]] ; then
+  echo "Making a FAT file system."
+  mkfs.fat -F 12 -f 1 -S 4096 -r 512 -s 1 -n 'ROOT' "${SYS_IMG}"
+elif [[ "${FILE_SYSTEM_TYPE^^}" == "LFS" ]] ; then
+  echo "Making an LFS file system"
+  losetup -d /dev/loop0 2> /dev/null
+  losetup /dev/loop0 ${SYS_IMG}
+  lfs --block_size=4096 --format /dev/loop0
+  losetup -d /dev/loop0
+else
+  echo 'Invalid argument. You need to specify either "FAT" or "LFS" with the -f or defaults to LFS'
+  exit 1
+fi
+
 exit 0

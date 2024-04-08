@@ -40,8 +40,10 @@
     "flash-sys": "scripts/write-sys.sh",
     "flash-merged": "scripts/write-merged.sh",
     "merge": "scripts/build-merge.sh",
-    "mount-sys-osx": "hdiutil attach images/sys.img -mountpoint ./sys-fs",
+    "mount-sys-lfs": "losetup /dev/loop0 images/sys.img && lfs --block_size=4096 /dev/loop0 ./sys-fs",
     "mount-sys-linux": "sudo mount -o uid=$(id -u),gid=$(id -g) images/sys.img ./sys-fs",
+    "mount-sys-osx": "hdiutil attach images/sys.img -mountpoint ./sys-fs",
+    "umount-sys-lfs": "umount ./sys-fs && losetup -d /dev/loop0",
     "umount-sys-linux": "sudo umount ./sys-fs",
     "umount-sys-osx": "hdiutil detach ./sys-fs"
   }

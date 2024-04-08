@@ -8,15 +8,5 @@ else
    echo "dist directory is empty or does not exist, skipping removal."
 fi
 
-# if there is no mainInfo.js file, then copy a default one in
-if [ ! -f "web/mainInfo.js" ]; then
-  echo "mainInfo.js does not exist in web/. Copying from default/mainInfo.js..."
-  # Ensure the web directory exists
-  cp default/mainInfo.js web/mainInfo.js || { echo 'Failed to copy mainInfo.js'; exit 1; }
-else
-  echo "mainInfo.js already exists in web/, no need to copy."
-fi
-
-
 # Run Parcel build
 parcel build web/index.html || { echo 'Parcel build failed'; exit 1; }

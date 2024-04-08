@@ -20,8 +20,10 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 from __future__ import print_function, division
 from __future__ import unicode_literals
+
 import argparse
 import os
 import re
@@ -249,6 +251,8 @@ class PartitionTable(list):
 
 class PartitionDefinition(object):
     MAGIC_BYTES = b"\xAA\x50"
+    ZERO_BYTES = b"\x00\x00"
+    FF_BYTES = b"\xFF\xFF"
 
     ALIGNMENT = {
         APP_TYPE: 0x10000,
@@ -472,6 +476,13 @@ def main():
     secure = args.secure
     offset_part_table = int(args.offset, 0)
     input = args.input.read()
+
+    # if the data is 0x00:0x00 or 0xff:0xff
+    if input[0:2] == PartitionDefinition.ZERO_BYTES or input[0:2] == PartitionDefinition.FF_BYTES:
+        # This looks empty flash so we cannot read it.
+        # exit with a failure
+        exit(3)
+
     input_is_binary = input[0:2] == PartitionDefinition.MAGIC_BYTES
     if input_is_binary:
         status("Parsing binary partition input...")
@@ -534,4 +545,6 @@ if __name__ == '__main__':
         main()
     except InputError as e:
         print(e, file=sys.stderr)
-        sys.exit(2)
+        exit(2)
+
+    exit(0)
